@@ -1,0 +1,65 @@
+{
+  "LCB_generation": {
+    "n_models": 155,
+    "n_items": 78,
+    "m1": "gemini-2.5-pro-exp-03-25",
+    "m2": "qwq-32b",
+    "m1_score": 0.8974,
+    "m2_score": 0.8846,
+    "margin": 1,
+    "n_plus": 4,
+    "n_minus": 3,
+    "flip_prob": 0.425,
+    "flip_ci": [
+      0.4207,
+      0.4293
+    ],
+    "loo_vulnerable": true,
+    "min_removals": 1,
+    "n_decisive": 4,
+    "n_counter": 3,
+    "gini_positive": 0.0014
+  },
+  "coding_completion": {
+    "n_models": 154,
+    "n_items": 50,
+    "m1": "o3-mini-2025-01-31-high",
+    "m2": "gemini-2.5-pro-exp-03-25",
+    "m1_score": 0.86,
+    "m2_score": 0.82,
+    "margin": 2,
+    "n_plus": 7,
+    "n_minus": 5,
+    "flip_prob": 0.335,
+    "flip_ci": [
+      0.3309,
+      0.3392
+    ],
+    "loo_vulnerable": false,
+    "min_removals": 2,
+    "n_decisive": 7,
+    "n_counter": 5,
+    "gini_positive": 0.0042
+  },
+  "typos": {
+    "n_models": 58,
+    "n_items": 100,
+    "m1": "hunyuan-turbos-20250313",
+    "m2": "claude-3-opus-20240229",
+    "m1_score": 0.8,
+    "m2_score": 0.75,
+    "margin": 5,
+    "n_plus": 16,
+    "n_minus": 11,
+    "flip_prob": 0.1931,
+    "flip_ci": [
+      0.1896,
+      0.1965
+    ],
+    "loo_vulnerable": false,
+    "min_removals": 5,
+    "n_decisive": 16,
+    "n_counter": 11,
+    "gini_positive": 0.0103
+  }
+}

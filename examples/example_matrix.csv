@@ -1,0 +1,5 @@
+model_id,item_1,item_2,item_3,item_4,item_5,item_6,item_7,item_8
+model_alpha,1,1,1,1,1,0,1,0
+model_beta,1,1,0,1,0,1,1,0
+model_gamma,1,0,0,1,0,1,0,0
+model_delta,0,0,0,1,0,0,0,0

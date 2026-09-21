@@ -1,0 +1,111 @@
+{
+  "config": {
+    "R_perm": 1000,
+    "min_same_sign": 4,
+    "seed": 42,
+    "gate": "task_clustered_synchronized_null"
+  },
+  "tier1_top1": {
+    "aggregate_within_rho": null,
+    "clustered_floor_p95": null,
+    "clustered_p_value": null,
+    "verdict": "No support",
+    "n_contests": 3,
+    "n_with_variance": 0,
+    "n_tasks": 3,
+    "pooled_rho_confounded": 0.0803,
+    "cluster_bootstrap_ci": [
+      null,
+      null
+    ],
+    "per_task": {
+      "LCB_generation": {
+        "aggregate": null,
+        "n_contests": 1,
+        "n_with_variance": 0
+      },
+      "coding_completion": {
+        "aggregate": null,
+        "n_contests": 1,
+        "n_with_variance": 0
+      },
+      "typos": {
+        "aggregate": null,
+        "n_contests": 1,
+        "n_with_variance": 0
+      }
+    }
+  },
+  "tier1_top5": {
+    "aggregate_within_rho": -0.3046,
+    "clustered_floor_p95": 0.3704,
+    "clustered_p_value": 0.904,
+    "verdict": "No support",
+    "n_contests": 15,
+    "n_with_variance": 8,
+    "n_tasks": 3,
+    "pooled_rho_confounded": 0.0704,
+    "cluster_bootstrap_ci": [
+      -0.866,
+      0.1943
+    ],
+    "per_task": {
+      "LCB_generation": {
+        "aggregate": -0.866,
+        "n_contests": 5,
+        "n_with_variance": 1
+      },
+      "coding_completion": {
+        "aggregate": -0.4629,
+        "n_contests": 5,
+        "n_with_variance": 4
+      },
+      "typos": {
+        "aggregate": 0.1943,
+        "n_contests": 5,
+        "n_with_variance": 3
+      }
+    }
+  },
+  "tier2_all_ranks": {
+    "aggregate_within_rho": 0.1074,
+    "clustered_floor_p95": 0.1118,
+    "clustered_p_value": 0.066,
+    "verdict": "No support",
+    "n_contests": 320,
+    "n_with_variance": 272,
+    "n_tasks": 3,
+    "pooled_rho_confounded": 0.2657,
+    "cluster_bootstrap_ci": [
+      0.0037,
+      0.17
+    ],
+    "per_task": {
+      "LCB_generation": {
+        "aggregate": 0.0913,
+        "n_contests": 140,
+        "n_with_variance": 123
+      },
+      "coding_completion": {
+        "aggregate": 0.17,
+        "n_contests": 123,
+        "n_with_variance": 120
+      },
+      "typos": {
+        "aggregate": 0.0037,
+        "n_contests": 57,
+        "n_with_variance": 29
+      }
+    }
+  },
+  "comparison_all_ranks": {
+    "old_independent_p": 0.002,
+    "old_independent_floor": 0.0597,
+    "old_independent_verdict": "Supported",
+    "old_n_contests_treated_independent": 320,
+    "new_clustered_p": 0.066,
+    "new_clustered_floor": 0.1118,
+    "new_clustered_verdict": "No support",
+    "new_effective_n_tasks": 3
+  }
+}

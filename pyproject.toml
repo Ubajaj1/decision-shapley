@@ -1,0 +1,46 @@
+[project]
+name = "decision-shapley"
+version = "0.1.0"
+description = "Item-level attribution and robustness analysis for leaderboard decisions"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "scipy>=1.11",
+    "matplotlib>=3.7",
+    "pyarrow>=14.0",
+    "datasets>=2.14",
+]
+
+[project.optional-dependencies]
+irt = ["girth>=0.8"]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+decision-shapley = "decision_shapley_cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = [
+    "baselines",
+    "bootstrap",
+    "calibration",
+    "concentration",
+    "data_io",
+    "decision",
+    "decision_shapley_cli",
+    "external_validation",
+    "livebench_io",
+    "loo",
+    "reportcard",
+    "shapley",
+    "synth",
+    "taxonomy",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

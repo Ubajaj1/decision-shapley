@@ -1,0 +1,110 @@
+[
+  {
+    "dataset": "livebench/LCB_generation",
+    "m1": "gemini-2.5-pro-exp-03-25",
+    "m2": "qwq-32b",
+    "margin": 1,
+    "n_items": 78,
+    "bootstrap_flip": 0.425,
+    "answerflip_0.01": 0.32868,
+    "answerflip_0.03": 0.41886,
+    "answerflip_0.05": 0.44154,
+    "answerflip_0.1": 0.46884
+  },
+  {
+    "dataset": "livebench/coding_completion",
+    "m1": "o3-mini-2025-01-31-high",
+    "m2": "gemini-2.5-pro-exp-03-25",
+    "margin": 2,
+    "n_items": 50,
+    "bootstrap_flip": 0.33502,
+    "answerflip_0.01": 0.06392,
+    "answerflip_0.03": 0.19786,
+    "answerflip_0.05": 0.26376,
+    "answerflip_0.1": 0.35214
+  },
+  {
+    "dataset": "livebench/typos",
+    "m1": "hunyuan-turbos-20250313",
+    "m2": "claude-3-opus-20240229",
+    "margin": 5,
+    "n_items": 100,
+    "bootstrap_flip": 0.19306,
+    "answerflip_0.01": 0.00184,
+    "answerflip_0.03": 0.0418,
+    "answerflip_0.05": 0.09664,
+    "answerflip_0.1": 0.2046
+  },
+  {
+    "dataset": "metabench/arc",
+    "m1": "DopeorNope/COKAL-v1-70B",
+    "m2": "SF-Foundation/Ein-70B-v2",
+    "margin": 89,
+    "n_items": 1172,
+    "bootstrap_flip": 0.0,
+    "answerflip_0.01": 0.0,
+    "answerflip_0.03": 0.0,
+    "answerflip_0.05": 0.0,
+    "answerflip_0.1": 0.0
+  },
+  {
+    "dataset": "metabench/gsm8k",
+    "m1": "MaziyarPanahi/Llama-3-70B-Instruct-DPO-v0.2",
+    "m2": "mmnga/Llama-3-70B-japanese-suzume-vector-v0.1",
+    "margin": 11,
+    "n_items": 1319,
+    "bootstrap_flip": 0.0453,
+    "answerflip_0.01": 0.02378,
+    "answerflip_0.03": 0.12982,
+    "answerflip_0.05": 0.19964,
+    "answerflip_0.1": 0.294
+  },
+  {
+    "dataset": "metabench/hellaswag",
+    "m1": "swap-uniba/LLaMAntino-3-ANITA-8B-Inst-DPO-ITA",
+    "m2": "saltlux/luxia-21.4b-alignment-v1.0",
+    "margin": 87,
+    "n_items": 10042,
+    "bootstrap_flip": 0.00086,
+    "answerflip_0.01": 0.0,
+    "answerflip_0.03": 0.00042,
+    "answerflip_0.05": 0.00578,
+    "answerflip_0.1": 0.0512
+  },
+  {
+    "dataset": "metabench/mmlu",
+    "m1": "AA051611/O0201",
+    "m2": "AA051611/V0201",
+    "margin": 143,
+    "n_items": 14042,
+    "bootstrap_flip": 0.0,
+    "answerflip_0.01": 0.0,
+    "answerflip_0.03": 0.0,
+    "answerflip_0.05": 0.00026,
+    "answerflip_0.1": 0.0115
+  },
+  {
+    "dataset": "metabench/truthfulqa",
+    "m1": "abideen/phi2-pro",
+    "m2": "kihoonlee/stock-solar-10.7b-v1",
+    "margin": 223,
+    "n_items": 817,
+    "bootstrap_flip": 0.0,
+    "answerflip_0.01": 0.0,
+    "answerflip_0.03": 0.0,
+    "answerflip_0.05": 0.0,
+    "answerflip_0.1": 0.0
+  },
+  {
+    "dataset": "metabench/winogrande",
+    "m1": "udkai/Garrulus",
+    "m2": "zhengr/MixTAO-7Bx2-MoE-Instruct-v4.0",
+    "margin": 7,
+    "n_items": 1267,
+    "bootstrap_flip": 0.00872,
+    "answerflip_0.01": 0.10288,
+    "answerflip_0.03": 0.23874,
+    "answerflip_0.05": 0.2987,
+    "answerflip_0.1": 0.3695
+  }
+]

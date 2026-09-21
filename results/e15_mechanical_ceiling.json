@@ -1,0 +1,36 @@
+{
+  "config": {
+    "R_perm": 1000,
+    "R_sim": 100,
+    "ceil_contest_cap": 15,
+    "seed": 42,
+    "ceiling_model": "1PL/Rasch (equal discrimination)"
+  },
+  "livebench": {
+    "n_clusters": 3,
+    "observed_median_rho": -0.027,
+    "floor_p95": 0.1075,
+    "ceiling_p5": -0.2746,
+    "ceiling_p50": 0.0091,
+    "ceiling_p95": 0.2871,
+    "verdict": "No support"
+  },
+  "classic": {
+    "n_clusters": 5,
+    "observed_median_rho": 0.0868,
+    "floor_p95": 0.014,
+    "ceiling_p5": 0.0852,
+    "ceiling_p50": 0.2459,
+    "ceiling_p95": 0.4003,
+    "verdict": "Partial (within mechanical coupling)"
+  },
+  "mmlu_subjects": {
+    "n_clusters": 57,
+    "observed_median_rho": 0.0523,
+    "floor_p95": 0.0112,
+    "ceiling_p5": 0.0903,
+    "ceiling_p50": 0.1558,
+    "ceiling_p95": 0.2094,
+    "verdict": "Partial (within mechanical coupling)"
+  }
+}

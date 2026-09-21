@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Explainer: Leaderboard Decision Robustness</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Georgia', serif; background: #fafaf7; color: #2c2c2c; line-height: 1.7; }
+  .container { max-width: 820px; margin: 0 auto; padding: 2em 1.5em; }
+  h1 { font-size: 2em; margin-bottom: 0.3em; color: #1a1a1a; }
+  h2 { font-size: 1.5em; margin: 2.5em 0 0.5em; color: #1a1a1a; border-bottom: 2px solid #e0d8c8; padding-bottom: 0.3em; }
+  h3 { font-size: 1.15em; margin: 1.5em 0 0.4em; color: #333; }
+  p { margin: 0.8em 0; }
+  .subtitle { color: #666; font-size: 1.1em; margin-bottom: 2em; }
+
+  .term-box {
+    background: #f0ece3; border-left: 4px solid #c4a35a; padding: 1em 1.2em;
+    margin: 1.2em 0; border-radius: 0 6px 6px 0;
+  }
+  .term-box strong { color: #8b6914; }
+
+  .example-box {
+    background: #eef3f8; border: 1px solid #c8d8e8; padding: 1.2em;
+    margin: 1.2em 0; border-radius: 6px; font-family: 'Menlo', 'Consolas', monospace; font-size: 0.88em;
+    line-height: 1.6; overflow-x: auto;
+  }
+  .example-box .label { font-family: 'Georgia', serif; font-weight: bold; color: #2a5a8a; margin-bottom: 0.5em; display: block; font-size: 1.05em; }
+
+  .analogy {
+    background: #f5f0ff; border-left: 4px solid #8b5cf6; padding: 1em 1.2em;
+    margin: 1.2em 0; border-radius: 0 6px 6px 0; font-style: italic;
+  }
+
+  .warning {
+    background: #fff5f5; border-left: 4px solid #e53e3e; padding: 1em 1.2em;
+    margin: 1.2em 0; border-radius: 0 6px 6px 0;
+  }
+  .warning strong { color: #c53030; }
+
+  .finding {
+    background: #f0fdf4; border-left: 4px solid #22c55e; padding: 1em 1.2em;
+    margin: 1.2em 0; border-radius: 0 6px 6px 0;
+  }
+  .finding strong { color: #15803d; }
+
+  table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 0.92em; }
+  th { background: #f0ece3; text-align: left; padding: 8px 10px; border: 1px solid #ddd; }
+  td { padding: 8px 10px; border: 1px solid #ddd; }
+  tr:nth-child(even) { background: #fafaf7; }
+  .highlight-row { background: #fff3cd !important; font-weight: bold; }
+
+  .grid-row { display: flex; gap: 1em; margin: 1em 0; flex-wrap: wrap; }
+  .grid-cell { flex: 1; min-width: 200px; background: white; border: 1px solid #ddd; border-radius: 8px; padding: 1em; text-align: center; }
+  .grid-cell .big { font-size: 2em; font-weight: bold; color: #2a5a8a; }
+  .grid-cell .desc { font-size: 0.85em; color: #666; margin-top: 0.3em; }
+
+  .step-num { display: inline-block; background: #2a5a8a; color: white; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; font-weight: bold; font-size: 0.85em; margin-right: 0.5em; }
+
+  .toc { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 1.2em 1.5em; margin: 1.5em 0; }
+  .toc a { text-decoration: none; color: #2a5a8a; display: block; padding: 0.3em 0; }
+  .toc a:hover { color: #c4a35a; }
+
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.82em; font-weight: bold; }
+  .pill-green { background: #dcfce7; color: #166534; }
+  .pill-red { background: #fee2e2; color: #991b1b; }
+  .pill-yellow { background: #fef9c3; color: #854d0e; }
+  .pill-gray { background: #f3f4f6; color: #374151; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>What Did We Actually Do?</h1>
+<p class="subtitle">A plain-language walkthrough of our leaderboard decision robustness research, with real data examples from every experiment.</p>
+
+<div class="toc">
+  <strong>Contents</strong>
+  <a href="#sec1">1. The Big Picture — What problem are we solving?</a>
+  <a href="#sec2">2. Key Terms — A glossary you'll need</a>
+  <a href="#sec3">3. The Data — What we're working with</a>
+  <a href="#sec4">4. Day 1: Loading the data (E0)</a>
+  <a href="#sec5">5. Days 2–3: Is the #1 pick fragile? (E2)</a>
+  <a href="#sec6">6. Days 4–5: Which items carry the decision? (E3)</a>
+  <a href="#sec7">7. Day 6: Proving our method works (E1, E4, E7)</a>
+  <a href="#sec8">8. So what? — What this means for the paper</a>
+  <a href="#sec9">9. Honest weaknesses</a>
+  <a href="#sec10">10. What's left to do</a>
+</div>
+
+<!-- ============================================ -->
+<h2 id="sec1">1. The Big Picture</h2>
+
+<p>People build AI models (like ChatGPT, Llama, Mistral, etc.) and want to know: <strong>which model is the best?</strong></p>
+
+<p>To answer this, we use <strong>benchmarks</strong> — standardized tests with hundreds or thousands of questions. We run every model through the test, count how many questions each one gets right, and rank them on a <strong>leaderboard</strong>.</p>
+
+<div class="analogy">
+  <strong>Analogy:</strong> Think of it like a school exam with 1,000 questions. Each student (model) takes the exam. We rank students by their total score. The student with the highest score is #1.
+</div>
+
+<p>Our research asks a simple but important question:</p>
+
+<p style="font-size: 1.2em; text-align: center; padding: 0.5em; background: #fff; border: 2px solid #c4a35a; border-radius: 8px;">
+  <strong>When we pick the #1 model, how many questions does that choice <em>actually</em> depend on?</strong>
+</p>
+
+<p>Maybe the #1 model is solidly better on hundreds of questions. Or maybe it only beats #2 because of a handful of lucky questions — and if we swapped out a few questions, #2 would win instead. That second scenario means the leaderboard ranking is <strong>fragile</strong> — it looks definitive, but it's really just a coin flip.</p>
+
+<!-- ============================================ -->
+<h2 id="sec2">2. Key Terms</h2>
+
+<div class="term-box">
+  <strong>Benchmark:</strong> A standardized test for AI models. Each benchmark has hundreds or thousands of individual questions (called "items"). Examples: ARC (science reasoning), GSM8K (math word problems), MMLU (college-level knowledge across 57 subjects).
+</div>
+
+<div class="term-box">
+  <strong>Item:</strong> A single question in a benchmark. For example, one ARC item might be: "Which of these is a conductor of electricity? (A) rubber (B) copper (C) wood (D) glass." The model either gets it right (1) or wrong (0).
+</div>
+
+<div class="term-box">
+  <strong>Result matrix (R):</strong> A giant spreadsheet. Rows = models, columns = items, cells = 0 or 1. If model "Llama-3-70B" got question #468 right, then R[Llama-3-70B, 468] = 1.
+</div>
+
+<div class="term-box">
+  <strong>Leaderboard:</strong> A ranking of models by their average score (what fraction of items they got right). The model with the highest average is #1.
+</div>
+
+<div class="term-box">
+  <strong>The #1 vs #2 contest:</strong> We focus specifically on the question: "Is the top-ranked model genuinely better than the second-ranked model?" This is the <em>decision</em> we're studying.
+</div>
+
+<div class="term-box">
+  <strong>Differential (d_i):</strong> For each item, we compute d_i = (did #1 get it right?) minus (did #2 get it right?). This gives us:
+  <ul style="margin: 0.5em 0 0 1.5em;">
+    <li><strong>d_i = +1</strong> → #1 got it right, #2 got it wrong (this item <em>helps</em> #1)</li>
+    <li><strong>d_i = −1</strong> → #2 got it right, #1 got it wrong (this item <em>hurts</em> #1)</li>
+    <li><strong>d_i = 0</strong> → both got the same answer (this item doesn't matter)</li>
+  </ul>
+</div>
+
+<div class="term-box">
+  <strong>Margin:</strong> The sum of all d_i values. If margin = 11, it means #1 got 11 more items right than #2 (after cancellation). A bigger margin = more robust decision. A tiny margin = fragile.
+</div>
+
+<div class="term-box">
+  <strong>Bootstrap resampling:</strong> A statistical technique. Imagine putting all 1,319 questions into a hat. You draw 1,319 questions <em>with replacement</em> (so some questions get drawn twice, others not at all). This simulates "what if we had a slightly different test?" You do this thousands of times and see how often the winner changes.
+</div>
+
+<div class="term-box">
+  <strong>Flip probability:</strong> The fraction of bootstrap resamples where the #2 model ends up winning instead. High flip probability = the decision is shaky.
+</div>
+
+<div class="term-box">
+  <strong>Leave-one-out (LOO):</strong> Remove one item at a time and check: does removing this single item change who wins? (Spoiler: it almost never does, because margins are usually > 1.)
+</div>
+
+<div class="term-box">
+  <strong>Shapley value (φ_i):</strong> A concept from game theory. It answers: "How much credit does item i deserve for the final outcome?" We compute this by looking at every possible ordering of items, adding them one by one, and seeing how much each item changes the result when it enters. Items that frequently push the decision over the tipping point get high credit.
+</div>
+
+<div class="term-box">
+  <strong>Value function v(S):</strong> This is how we define "winning" for any subset S of items. We use the <strong>flip-indicator</strong>: v(S) = 1 if #1 is winning on subset S, v(S) = 0 if #2 is winning, v(S) = 0.5 if it's a tie. This is a yes/no function — it doesn't care <em>how much</em> #1 is winning by, only <em>whether</em> #1 is winning.
+</div>
+
+<div class="term-box">
+  <strong>Decisive item:</strong> An item with positive Shapley value — it contributes to #1 winning.
+</div>
+
+<div class="term-box">
+  <strong>Counter-evidential item:</strong> An item with negative Shapley value — it's evidence <em>against</em> #1 (because #2 got it right and #1 didn't).
+</div>
+
+<div class="term-box">
+  <strong>Redundant item:</strong> An item with Shapley value ≈ 0 — it doesn't affect the decision at all (typically because both models answered the same way).
+</div>
+
+<!-- ============================================ -->
+<h2 id="sec3">3. The Data</h2>
+
+<p>We use data from the <strong>Open LLM Leaderboard v1</strong>, collected by the metabench project. This covers 6 benchmarks:</p>
+
+<table>
+  <tr>
+    <th>Benchmark</th>
+    <th>What it tests</th>
+    <th>Models</th>
+    <th>Items (questions)</th>
+  </tr>
+  <tr><td>ARC</td><td>Grade-school science reasoning</td><td>5,227</td><td>1,172</td></tr>
+  <tr><td>GSM8K</td><td>Math word problems</td><td>6,702</td><td>1,319</td></tr>
+  <tr><td>HellaSwag</td><td>Sentence completion / commonsense</td><td>5,227</td><td>10,042</td></tr>
+  <tr><td>MMLU</td><td>College-level knowledge (57 subjects)</td><td>5,225</td><td>14,042</td></tr>
+  <tr><td>TruthfulQA</td><td>Truthfulness / avoiding misconceptions</td><td>5,228</td><td>817</td></tr>
+  <tr><td>Winogrande</td><td>Commonsense pronoun resolution</td><td>6,558</td><td>1,267</td></tr>
+</table>
+
+<p>For each benchmark, we have a giant matrix: ~5,000–6,700 models × ~800–14,000 items, with a 0 or 1 in each cell.</p>
+
+<!-- ============================================ -->
+<h2 id="sec4">4. Day 1: Loading the Data (E0)</h2>
+
+<h3><span class="step-num">1</span> What we did</h3>
+<p>Downloaded all 6 matrices, loaded them, verified they're clean (no missing data, all values are 0 or 1), and identified the #1 and #2 model for each benchmark.</p>
+
+<h3><span class="step-num">2</span> Real example: ARC benchmark</h3>
+
+<div class="example-box">
+  <span class="label">ARC — The #1 vs #2 Contest</span>
+  #1 model: DopeorNope/COKAL-v1-70B    score: 87.46% (1024/1172 correct)<br>
+  #2 model: SF-Foundation/Ein-70B-v2    score: 79.86% (936/1172 correct)<br>
+  <br>
+  Now compare them item by item:<br>
+  <br>
+  Item 9:  #1 got it RIGHT, #2 got it WRONG  →  d = <span style="color:#22c55e;font-weight:bold">+1</span>  (favors #1)<br>
+  Item 4:  #1 got it WRONG, #2 got it RIGHT  →  d = <span style="color:#e53e3e;font-weight:bold">−1</span>  (favors #2)<br>
+  Item 1:  both got it RIGHT                 →  d = <span style="color:#888">0</span>   (doesn't matter)<br>
+  Item 1170: both got it RIGHT               →  d = <span style="color:#888">0</span>   (doesn't matter)<br>
+  <br>
+  Out of 1,172 items:<br>
+  &nbsp; 151 items favor #1  (d = +1)<br>
+  &nbsp;  62 items favor #2  (d = −1)<br>
+  &nbsp; 959 items are ties  (d =  0)  ← <strong>82% of items don't matter at all!</strong><br>
+  <br>
+  Margin: 151 − 62 = <strong>89</strong><br>
+  (meaning #1 has a net advantage of 89 items)
+</div>
+
+<p>That's the key insight already visible: <strong>most items in a benchmark are irrelevant to who wins.</strong> On ARC, 82% of items are ties — both models answered the same way. The decision only depends on the remaining 18%.</p>
+
+<h3><span class="step-num">3</span> All six benchmarks at a glance</h3>
+
+<table>
+  <tr>
+    <th>Benchmark</th><th>#1 Model</th><th>#1 Score</th><th>#2 Score</th><th>Margin</th><th>Items that matter</th><th>% irrelevant</th>
+  </tr>
+  <tr>
+    <td>ARC</td><td>DopeorNope/COKAL-v1-70B</td><td>87.5%</td><td>79.9%</td><td>89</td><td>213 / 1,172</td><td>82%</td>
+  </tr>
+  <tr class="highlight-row">
+    <td>GSM8K</td><td>MaziyarPanahi/Llama-3-70B-Instruct-DPO</td><td>88.2%</td><td>87.4%</td><td>11</td><td>39 / 1,319</td><td>97%</td>
+  </tr>
+  <tr>
+    <td>HellaSwag</td><td>swap-uniba/LLaMAntino-3-ANITA</td><td>92.8%</td><td>91.9%</td><td>87</td><td>773 / 10,042</td><td>92%</td>
+  </tr>
+  <tr>
+    <td>MMLU</td><td>AA051611/O0201</td><td>90.4%</td><td>89.4%</td><td>143</td><td>885 / 14,042</td><td>94%</td>
+  </tr>
+  <tr>
+    <td>TruthfulQA</td><td>abideen/phi2-pro</td><td>100%</td><td>72.7%</td><td>223</td><td>223 / 817</td><td>73%</td>
+  </tr>
+  <tr class="highlight-row">
+    <td>Winogrande</td><td>udkai/Garrulus</td><td>91.5%</td><td>90.9%</td><td>7</td><td>9 / 1,267</td><td>99.3%</td>
+  </tr>
+</table>
+
+<div class="finding">
+  <strong>Key finding:</strong> Look at Winogrande — the entire #1-vs-#2 decision rests on just <strong>9 items out of 1,267</strong>. That's 0.7% of the benchmark. 99.3% of items are completely irrelevant to who "wins."
+</div>
+
+<div class="warning">
+  <strong>Data quality issue:</strong> TruthfulQA has 33 models with a perfect 100% score. That's almost certainly because those models memorized the answers (data contamination). We skip past the 32 tied models and analyze rank 33 vs rank 34.
+</div>
+
+<!-- ============================================ -->
+<h2 id="sec5">5. Days 2–3: Is the #1 Pick Fragile? (E2)</h2>
+
+<h3><span class="step-num">1</span> The idea</h3>
+<p>The benchmark has 1,319 questions (for GSM8K). But it could have had <em>different</em> questions. If someone had written the benchmark with a slightly different set of math problems, would the same model still win?</p>
+
+<p>We simulate this by <strong>bootstrap resampling</strong>: we draw 1,319 questions randomly from the original 1,319 <em>with replacement</em> (so some questions appear twice, others are left out). Then we check: who wins on this "alternate" test?</p>
+
+<div class="analogy">
+  <strong>Analogy:</strong> Imagine a school exam with 1,319 questions. Two students scored almost the same — Student A got 11 more questions right. Now imagine the teacher rewrites the exam by randomly picking 1,319 questions from a question bank (which happens to be the same 1,319 questions, but some get picked twice). Would Student A still win? If sometimes Student B wins on the rewritten exam, the original ranking was shaky.
+</div>
+
+<h3><span class="step-num">2</span> Real example: GSM8K bootstrap</h3>
+
+<p>GSM8K has margin = 11. Let's watch 10 individual resamples:</p>
+
+<div class="example-box">
+  <span class="label">GSM8K — 10 Bootstrap Resamples</span>
+  Original margin: +11 (#1 wins by 11 items)<br>
+  <br>
+  Resample 1: margin = +16 → #1 still wins ✓<br>
+  Resample 2: margin =  +8 → #1 still wins ✓<br>
+  Resample 3: margin =  +5 → #1 still wins ✓<br>
+  Resample 4: margin = +17 → #1 still wins ✓<br>
+  Resample 5: margin = +16 → #1 still wins ✓<br>
+  Resample 6: margin = +21 → #1 still wins ✓<br>
+  Resample 7: margin = +17 → #1 still wins ✓<br>
+  Resample 8: margin = +11 → #1 still wins ✓<br>
+  Resample 9: margin = +15 → #1 still wins ✓<br>
+  Resample 10: margin = +17 → #1 still wins ✓<br>
+  <br>
+  These 10 all look safe. But over <strong>50,000 resamples</strong>:<br>
+  &nbsp; 1,585 times → #2 won (margin went negative)  = <strong>3.2%</strong><br>
+  &nbsp;   680 times → exact tie (margin = 0)           = <strong>1.4%</strong><br>
+  &nbsp; Total "decision would change": <strong>4.5%</strong> of the time
+</div>
+
+<p>So if you picked the GSM8K #1 model, there's roughly a <strong>1-in-22 chance</strong> that a slightly different set of questions would have made #2 win instead.</p>
+
+<h3><span class="step-num">3</span> Leave-one-out (LOO)</h3>
+<p>We also tried removing items one at a time. Can removing a <em>single</em> question flip the winner? The answer is <strong>no, for any benchmark</strong> — because even the smallest margin (Winogrande, margin = 7) means you'd need to remove 7 items to create a tie. LOO only works when the margin is exactly 1.</p>
+
+<h3><span class="step-num">4</span> Results across all benchmarks</h3>
+
+<table>
+  <tr>
+    <th>Benchmark</th><th>Margin</th><th>Flip Probability</th><th>Verdict</th>
+  </tr>
+  <tr class="highlight-row">
+    <td>GSM8K</td><td>11</td><td>4.5%</td><td><span class="pill pill-red">FRAGILE</span></td>
+  </tr>
+  <tr>
+    <td>Winogrande</td><td>7</td><td>0.9%</td><td><span class="pill pill-yellow">BORDERLINE</span></td>
+  </tr>
+  <tr>
+    <td>HellaSwag</td><td>87</td><td>0.09%</td><td><span class="pill pill-green">STABLE</span></td>
+  </tr>
+  <tr>
+    <td>ARC</td><td>89</td><td>~0%</td><td><span class="pill pill-green">STABLE</span></td>
+  </tr>
+  <tr>
+    <td>MMLU</td><td>143</td><td>~0%</td><td><span class="pill pill-green">STABLE</span></td>
+  </tr>
+  <tr>
+    <td>TruthfulQA</td><td>223</td><td>~0%</td><td><span class="pill pill-gray">DEGENERATE</span></td>
+  </tr>
+</table>
+
+<div class="finding">
+  <strong>Headline number:</strong> GSM8K's #1 selection has a ~4.5% chance of flipping under item resampling — right at the standard statistical significance threshold (α = 0.05). A practitioner picking "the best math model" from this leaderboard is making a statistically shaky choice.
+</div>
+
+<p>But wait — why is Winogrande less fragile than GSM8K when its margin (7) is <em>smaller</em>? Because Winogrande only has 1 counter-evidential item (d = −1) vs 8 decisive items (d = +1). When you resample, you rarely pick enough of that one bad item to overcome the 7 good ones. GSM8K has 14 counter-evidential items that can pile up.</p>
+
+<!-- ============================================ -->
+<h2 id="sec6">6. Days 4–5: Which Items Carry the Decision? (E3)</h2>
+
+<h3><span class="step-num">1</span> Why Shapley? Why not just count d=+1 items?</h3>
+
+<p>Counting d=+1 and d=−1 items tells you the <em>quantity</em> of items favoring each side. But it doesn't tell you how much each individual item <em>matters</em> for the decision. Shapley values answer: "If I had to assign credit for #1 winning, how much credit does each item deserve?"</p>
+
+<div class="analogy">
+  <strong>Analogy:</strong> In a basketball game, your team wins by 5 points. Every player who scored contributed. But who was <em>decisive</em>? The player who hit a three-pointer when the score was tied contributed more to the <em>win</em> than a player who scored when you were already ahead by 20. Shapley values capture this — items that matter near the "tipping point" get more credit.
+</div>
+
+<h3><span class="step-num">2</span> How we compute it</h3>
+
+<p>We use <strong>Monte-Carlo Shapley estimation</strong>. Here's the intuition:</p>
+
+<ol style="margin: 0.8em 0 0.8em 1.5em;">
+  <li>Shuffle all items into a random order.</li>
+  <li>Start with an empty set. The score is "tie" (v = 0.5).</li>
+  <li>Add items one by one. Keep a running tally of the differential sum.</li>
+  <li>Each time you add an item, record whether it changed the outcome (from tie to #1-winning, or from #1-winning to tie, etc.). That change is the item's "marginal contribution" in this ordering.</li>
+  <li>Repeat with 20,000 different random orderings.</li>
+  <li>Each item's Shapley value = its average marginal contribution across all orderings.</li>
+</ol>
+
+<h3><span class="step-num">3</span> Why the "flip-indicator" value function matters (Gap 1)</h3>
+
+<p>This is a critical technical point. There are two ways to define "value":</p>
+
+<p><strong>Option A (margin):</strong> v(S) = sum of d_i for items in S. This counts <em>how much</em> #1 is ahead.</p>
+<p><strong>Option B (flip-indicator):</strong> v(S) = 1 if sum > 0 (just: <em>is</em> #1 ahead?), 0.5 if tied, 0 if behind.</p>
+
+<p>If you use Option A, every item's Shapley value is just d_i itself. Every +1 item gets credit = 1, every −1 item gets credit = −1. There's no differentiation, no insight — you've just recreated what you already knew.</p>
+
+<p>Option B is nonlinear — it doesn't care how much #1 is winning by, only whether #1 <em>is</em> winning. This means items near the tipping point (where the decision could go either way) get more credit than items added when #1 is already far ahead.</p>
+
+<h3><span class="step-num">4</span> Real example: Winogrande (all 9 active items)</h3>
+
+<div class="example-box">
+  <span class="label">Winogrande — All items that matter for the #1 vs #2 decision</span>
+  Out of 1,267 items, only 9 have d ≠ 0. Here they are with Shapley values:<br>
+  <br>
+  Item  52:  d = +1  φ = +0.0779  <span class="pill pill-green">DECISIVE</span><br>
+  Item 143:  d = +1  φ = +0.0770  <span class="pill pill-green">DECISIVE</span><br>
+  Item 160:  d = +1  φ = +0.0759  <span class="pill pill-green">DECISIVE</span><br>
+  Item 383:  d = +1  φ = +0.0752  <span class="pill pill-green">DECISIVE</span><br>
+  Item 414:  d = +1  φ = +0.0742  <span class="pill pill-green">DECISIVE</span><br>
+  Item 713:  d = +1  φ = +0.0758  <span class="pill pill-green">DECISIVE</span><br>
+  Item 894:  d = +1  φ = +0.0761  <span class="pill pill-green">DECISIVE</span><br>
+  Item 1217: d = +1  φ = +0.0788  <span class="pill pill-green">DECISIVE</span><br>
+  Item 1172: d = −1  φ = <strong>−0.1108</strong>  <span class="pill pill-red">COUNTER-EVIDENTIAL</span><br>
+  <br>
+  Sum of all φ = 0.5000 ✓ (this must always equal exactly 0.5 — a mathematical guarantee called the "efficiency axiom")<br>
+  <br>
+  The remaining 1,258 items all have φ = 0 exactly. <span class="pill pill-gray">REDUNDANT</span>
+</div>
+
+<p>Notice something striking: <strong>Item 1172</strong> has the largest magnitude of any item (−0.111). This is the one item where #2 outperformed #1. Its Shapley value is <em>more negative</em> than any single decisive item is positive. That's because with only 1 counter-evidential item, every time it appears in a permutation near the tipping point, it threatens to flip the decision all by itself.</p>
+
+<h3><span class="step-num">5</span> Real example: GSM8K (39 active items)</h3>
+
+<div class="example-box">
+  <span class="label">GSM8K — Top 5 most decisive and most counter-evidential items</span>
+  Total: 25 decisive items, 14 counter-evidential items, 1,280 redundant.<br>
+  <br>
+  Most decisive (biggest positive φ):<br>
+  &nbsp; Item 468:  φ = +0.0614  (this item contributes ~6% of the total positive credit)<br>
+  &nbsp; Item 1098: φ = +0.0601<br>
+  &nbsp; Item 120:  φ = +0.0601<br>
+  &nbsp; Item 851:  φ = +0.0597<br>
+  &nbsp; Item 429:  φ = +0.0597<br>
+  <br>
+  Most counter-evidential (biggest negative φ):<br>
+  &nbsp; Item 103:  φ = −0.0713  (this item <em>hurts</em> #1 the most)<br>
+  &nbsp; Item 1151: φ = −0.0709<br>
+  &nbsp; Item 19:   φ = −0.0704<br>
+  &nbsp; Item 1154: φ = −0.0703<br>
+  &nbsp; Item 278:  φ = −0.0699
+</div>
+
+<p>Each counter-evidential item has a <em>larger magnitude</em> than each decisive item. That's because there are fewer of them (14 vs 25), so each one carries proportionally more "anti-#1" weight.</p>
+
+<!-- ============================================ -->
+<h2 id="sec7">7. Day 6: Proving Our Method Works (E1, E4, E7)</h2>
+
+<h3><span class="step-num">1</span> E1: The synthetic duplicate test</h3>
+
+<p>This experiment validates our core methodological choice (the flip-indicator). We create a simple toy scenario:</p>
+
+<div class="example-box">
+  <span class="label">Toy scenario: 5 items favor #1, 3 favor #2, margin = 2</span>
+  d = [+1, +1, +1, +1, +1, −1, −1, −1, 0, 0, 0, 0, ...10 zeros...]<br>
+  <br>
+  Now DUPLICATE item #1 two extra times:<br>
+  d = [+1, <strong>+1, +1</strong>, +1, +1, +1, +1, −1, −1, −1, 0, 0, ...10 zeros...]<br>
+  Margin is now 4 instead of 2. But no new <em>information</em> was added!<br>
+  <br>
+  What each method says about each +1 item:<br>
+  <br>
+  <strong>Margin-Shapley / LOO:</strong><br>
+  &nbsp; Every +1 item gets φ = 1.0 (always, regardless of duplicates)<br>
+  &nbsp; → Can't tell that duplicating added no information<br>
+  <br>
+  <strong>Flip-Shapley:</strong><br>
+  &nbsp; Without duplicates: each +1 item gets φ ≈ 0.23<br>
+  &nbsp; With duplicates:    each +1 item gets φ ≈ 0.14<br>
+  &nbsp; → Credit per item <em>decreased</em> because it's shared among more copies ✓
+</div>
+
+<p>This proves flip-Shapley properly handles redundancy — if you copy a question, the copies share credit rather than each getting full credit.</p>
+
+<h3><span class="step-num">2</span> E4: Shapley vs LOO on real data</h3>
+
+<p>On real benchmarks, LOO treats every d = +1 item identically (each one contributes +1 to the margin, period). Flip-Shapley differentiates them — giving slightly different values based on their combinatorial context. The correlation between the two is 0.55–0.86 — they broadly agree but Shapley provides finer resolution.</p>
+
+<h3><span class="step-num">3</span> E7: The report card artifact</h3>
+
+<p>We built a tool: feed in <em>any</em> binary result matrix → get out a complete report with flip probability, decisive items, taxonomy. This is the "tool with AI" contribution for the ICTAI venue. It works on ARC, GSM8K, Winogrande — any benchmark.</p>
+
+<!-- ============================================ -->
+<h2 id="sec8">8. So What? — What This Means for the Paper</h2>
+
+<h3>The story that works</h3>
+
+<div class="finding">
+  <strong>Finding 1:</strong> Most benchmark items are irrelevant to who "wins." On Winogrande, 99.3% of items don't affect the #1 vs #2 decision. On GSM8K, 97%. The leaderboard ranking is determined by a tiny fraction of questions.
+</div>
+
+<div class="finding">
+  <strong>Finding 2:</strong> Some #1 selections are statistically fragile. GSM8K's top model has a ~4.5% chance of losing its #1 spot under item resampling — right at the conventional significance threshold. A practitioner trusting that ranking is making a borderline call.
+</div>
+
+<div class="finding">
+  <strong>Finding 3:</strong> The flip-indicator Shapley framework is the correct formulation for decision attribution. The margin-based version is mathematically degenerate (reduces to LOO). This is a clean theoretical result validated by E1.
+</div>
+
+<div class="finding">
+  <strong>Finding 4:</strong> Counter-evidential items (where #2 outperforms #1) carry disproportionate per-item weight. On Winogrande, the single counter-evidential item has φ = −0.111, larger in magnitude than any decisive item's φ ≈ +0.077.
+</div>
+
+<!-- ============================================ -->
+<h2 id="sec9">9. Honest Weaknesses</h2>
+
+<div class="warning">
+  <strong>Weakness 1: Most decisions are actually stable.</strong><br>
+  Only GSM8K is genuinely fragile. Four out of six benchmarks have near-zero flip probability. The paper's motivation implies leaderboard decisions are unreliable, but the data shows most are robust. The honest framing: "most are stable, but some are not, and here's how to tell."
+</div>
+
+<div class="warning">
+  <strong>Weakness 2: Shapley doesn't differentiate much within groups.</strong><br>
+  All d = +1 items get very similar Shapley values (within each benchmark). The standard deviation among +1 items is 0.0002–0.0014 — tiny. Shapley's advantage over LOO is theoretically clean but practically small on these data, because real benchmark items aren't literal duplicates of each other.
+</div>
+
+<div class="warning">
+  <strong>Weakness 3: The top models might be outliers.</strong><br>
+  ARC's #1 model leads by 7.6 percentage points — suspicious for benchmark contamination (the model may have seen the test questions during training). TruthfulQA has 33 perfect-score models. We might be analyzing artificial contests. Looking at tighter, more realistic contests (like rank 5 vs rank 6) would strengthen the paper.
+</div>
+
+<div class="warning">
+  <strong>Weakness 4: We only look at #1 vs #2.</strong><br>
+  All our analysis is about the very top pair. More interesting fragility might exist further down the ranking where margins are tighter and models are more comparable. The paper should acknowledge this scope limitation.
+</div>
+
+<div class="warning">
+  <strong>Weakness 5: The concentration story is flat.</strong><br>
+  We expected to find that "a few items dominate the decision." Instead, among active items, Shapley credit is spread almost evenly (Gini coefficients of 0.01–0.06). The interesting concentration is between active and inactive items (most items are d = 0), not within the active set. You don't need Shapley for that insight.
+</div>
+
+<!-- ============================================ -->
+<h2 id="sec10">10. What's Left to Do</h2>
+
+<h3>Three remaining experiments</h3>
+
+<table>
+  <tr><th>Experiment</th><th>What it does</th><th>Why it matters</th></tr>
+  <tr>
+    <td><strong>E4b</strong><br>Alternative perturbation</td>
+    <td>Instead of resampling items, randomly flip some uncertain answers (change some 0s to 1s and vice versa). Check if the same benchmarks come out as "fragile."</td>
+    <td>Validates that our findings aren't just an artifact of the bootstrap method. If both methods agree, the fragility is real.</td>
+  </tr>
+  <tr>
+    <td><strong>E5</strong><br>IRT / Fisher baseline</td>
+    <td>Use an established psychometric method (Item Response Theory) to rank items by how well they discriminate between models at the #1/#2 ability level. Compare to our Shapley ranking.</td>
+    <td>Defense against "couldn't existing methods do this?" Key argument: IRT can't identify counter-evidential items because it only measures discrimination, not direction.</td>
+  </tr>
+  <tr>
+    <td><strong>E6</strong><br>Concentration ↔ flip probability</td>
+    <td>Plot Shapley concentration (Gini) vs flip probability across all 6 benchmarks. Check if more concentrated = more fragile.</td>
+    <td>Provides a potential "law" linking our two main metrics. But the flat Gini values may make this scatter plot uninformative — which is itself a finding worth reporting.</td>
+  </tr>
+</table>
+
+<h3>Then: paper writing</h3>
+<p>Days 7–9: write everything into an IEEE 2-column template (8 pages max). Introduction, related work, method, experiments, threats to validity, conclusion. Two core figures (flip probability bar chart, Shapley Lorenz curves). Anonymize for double-blind review. Deadline: June 30, 2026.</p>
+
+</div>
+</body>
+</html>

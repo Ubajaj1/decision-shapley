@@ -1,0 +1,18 @@
+Contest: gemini-2.5-pro-exp-03-25 vs qwq-32b  (margin 1, M=155 models, N=78 items)
+Valid resamples: 2000/2000
+
+item   d     a      phi  boot_mu             95% CI      sd
+  D1  +1  0.83   0.1962   0.1929 [ 0.1562, 0.2227]  0.0167
+  D2  +1  0.80   0.1914   0.1875 [ 0.1467, 0.2217]  0.0197
+  D3  +1  0.60   0.1607   0.1588 [ 0.1253, 0.1948]  0.0179
+  D4  +1  0.41   0.1243   0.1255 [ 0.1126, 0.1396]  0.0068
+  C5  -1  0.99  -0.2457  -0.2429 [-0.2696,-0.2116]  0.0150
+  C6  -1  0.76  -0.2037  -0.2019 [-0.2322,-0.1615]  0.0181
+  C7  -1  0.75  -0.1981  -0.1952 [-0.2212,-0.1608]  0.0155
+
+Ordering stability over 2000 resamples:
+  strict D1>D2>D3>D4 : 41.4%
+  D1 top & D4 bottom : 51.4%
+  D1 > D4            : 99.8%
+
+Saved /Users/utkarshbajaj/Documents/05-Code-Projects/llm-leaderboard-research/decision-robustness/results/e19_showcase_cis.json

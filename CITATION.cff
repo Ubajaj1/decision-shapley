@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the ICTAI 2026 paper."
+title: "Decision-Shapley"
+type: software
+authors:
+  - family-names: Bajaj
+    given-names: Utkarsh
+  - family-names: Mehta
+    given-names: Madhur
+version: 0.1.0
+repository-code: "https://github.com/Ubajaj1/decision-shapley"
+preferred-citation:
+  type: conference-paper
+  title: "Won by a Single Question: Item-Level Attribution and the Robustness of LLM Leaderboard Decisions"
+  authors:
+    - family-names: Bajaj
+      given-names: Utkarsh
+    - family-names: Mehta
+      given-names: Madhur
+  year: 2026
+  proceedings-title: "38th International Conference on Tools with Artificial Intelligence (ICTAI 2026)"

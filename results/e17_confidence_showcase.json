@@ -1,0 +1,93 @@
+{
+  "task": "livebench/LCB_generation",
+  "contest": {
+    "m1": "gemini-2.5-pro-exp-03-25",
+    "m2": "qwq-32b",
+    "m1_score": 0.8974,
+    "m2_score": 0.8846,
+    "margin": 1,
+    "n_plus": 4,
+    "n_minus": 3,
+    "n_zero": 71,
+    "n_items": 78
+  },
+  "value_functions": {
+    "flip": {
+      "efficiency_sum": 0.5,
+      "max_se": 0.00176
+    },
+    "confidence": {
+      "v_all": 0.525,
+      "max_se": 0.00076
+    },
+    "information": {
+      "v_all": 0.4467,
+      "max_se": 0.00031
+    }
+  },
+  "items": [
+    {
+      "item_index": 34,
+      "d": 1,
+      "discrimination_a": 0.826,
+      "redundancy_mean_corr_same_sign": 0.34,
+      "phi_flip": 0.3327,
+      "phi_confidence": 0.1962,
+      "phi_information": 0.0951
+    },
+    {
+      "item_index": 17,
+      "d": 1,
+      "discrimination_a": 0.797,
+      "redundancy_mean_corr_same_sign": 0.377,
+      "phi_flip": 0.3335,
+      "phi_confidence": 0.1914,
+      "phi_information": 0.0809
+    },
+    {
+      "item_index": 16,
+      "d": 1,
+      "discrimination_a": 0.602,
+      "redundancy_mean_corr_same_sign": 0.285,
+      "phi_flip": 0.3342,
+      "phi_confidence": 0.1607,
+      "phi_information": 0.053
+    },
+    {
+      "item_index": 43,
+      "d": 1,
+      "discrimination_a": 0.415,
+      "redundancy_mean_corr_same_sign": 0.436,
+      "phi_flip": 0.332,
+      "phi_confidence": 0.1243,
+      "phi_information": 0.0238
+    },
+    {
+      "item_index": 19,
+      "d": -1,
+      "discrimination_a": 0.991,
+      "redundancy_mean_corr_same_sign": 0.429,
+      "phi_flip": -0.2773,
+      "phi_confidence": -0.2457,
+      "phi_information": -0.1441
+    },
+    {
+      "item_index": 4,
+      "d": -1,
+      "discrimination_a": 0.758,
+      "redundancy_mean_corr_same_sign": 0.419,
+      "phi_flip": -0.278,
+      "phi_confidence": -0.2037,
+      "phi_information": -0.0888
+    },
+    {
+      "item_index": 51,
+      "d": -1,
+      "discrimination_a": 0.752,
+      "redundancy_mean_corr_same_sign": 0.528,
+      "phi_flip": -0.277,
+      "phi_confidence": -0.1981,
+      "phi_information": -0.0732
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "config": {
+    "R_perm": 1000,
+    "min_same_sign": 4,
+    "seed": 42,
+    "gate": "within_contest_median"
+  },
+  "LCB_generation": {
+    "aggregate_within_rho": 0.0913,
+    "floor_p95": 0.0976,
+    "p_value": 0.065,
+    "verdict": "No support",
+    "pooled_rho_confounded": 0.1489,
+    "n_contests": 140,
+    "n_with_variance": 123,
+    "stat": "median",
+    "k": 13
+  },
+  "coding_completion": {
+    "aggregate_within_rho": 0.17,
+    "floor_p95": 0.102,
+    "p_value": 0.003,
+    "verdict": "Supported",
+    "pooled_rho_confounded": 0.2789,
+    "n_contests": 123,
+    "n_with_variance": 120,
+    "stat": "median",
+    "k": 13
+  },
+  "typos": {
+    "aggregate_within_rho": 0.0037,
+    "floor_p95": 0.1104,
+    "p_value": 0.458,
+    "verdict": "No support",
+    "pooled_rho_confounded": 0.0701,
+    "n_contests": 56,
+    "n_with_variance": 29,
+    "stat": "median",
+    "k": 8
+  },
+  "pooled_primary": {
+    "aggregate_within_rho": 0.1074,
+    "floor_p95": 0.0555,
+    "p_value": 0.002,
+    "verdict": "Supported",
+    "pooled_rho_confounded": 0.2574,
+    "n_contests": 319,
+    "n_with_variance": 272,
+    "stat": "median",
+    "k": 13
+  },
+  "pooled_negative": {
+    "aggregate_within_rho": 0.1732,
+    "floor_p95": 0.0664,
+    "p_value": 0.0,
+    "verdict": "Supported",
+    "pooled_rho_confounded": 0.1586,
+    "n_contests": 278,
+    "n_with_variance": 229,
+    "stat": "median",
+    "k": 13
+  },
+  "k_sensitivity": {
+    "half_k": {
+      "aggregate_within_rho": 0.1331,
+      "floor_p95": 0.0598,
+      "p_value": 0.001,
+      "verdict": "Supported",
+      "pooled_rho_confounded": 0.1908,
+      "n_contests": 319,
+      "n_with_variance": 266,
+      "stat": "median",
+      "k": 6
+    },
+    "k": {
+      "aggregate_within_rho": 0.1074,
+      "floor_p95": 0.0555,
+      "p_value": 0.002,
+      "verdict": "Supported",
+      "pooled_rho_confounded": 0.2574,
+      "n_contests": 319,
+      "n_with_variance": 272,
+      "stat": "median",
+      "k": 13
+    },
+    "double_k": {
+      "aggregate_within_rho": 0.01,
+      "floor_p95": 0.055,
+      "p_value": 0.234,
+      "verdict": "No support",
+      "pooled_rho_confounded": 0.2807,
+      "n_contests": 319,
+      "n_with_variance": 278,
+      "stat": "median",
+      "k": 26
+    }
+  },
+  "pooled_primary_info_phi": {
+    "aggregate_within_rho": 0.112,
+    "floor_p95": 0.0544,
+    "p_value": 0.0,
+    "verdict": "Supported",
+    "pooled_rho_confounded": 0.2096,
+    "n_contests": 319,
+    "n_with_variance": 272,
+    "stat": "median",
+    "k": 13
+  }
+}
