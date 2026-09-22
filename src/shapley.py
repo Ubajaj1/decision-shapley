@@ -470,11 +470,14 @@ def _info_value(g_S: np.ndarray, h_S: np.ndarray, C_S: np.ndarray,
     if link == "probit":
         return float(norm.cdf(z))
     if link == "step":
+        # Linear solves and dot products can leave an epsilon-sized residual
+        # for an analytically exact tie. Preserve the step game's v(tie)=0.5
+        # semantics across BLAS/NumPy implementations.
+        if np.isclose(z, 0.0, rtol=0.0, atol=1e-12):
+            return 0.5
         if z > 0:
             return 1.0
-        if z < 0:
-            return 0.0
-        return 0.5
+        return 0.0
     raise ValueError(f"unknown link: {link!r}")
 
 
