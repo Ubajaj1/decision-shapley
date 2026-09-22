@@ -21,8 +21,7 @@ synchronized null is materially WIDER than the naive independent null.
 import numpy as np
 import pytest
 
-from _helpers import make_2pl_matrix
-from decision import top_two
+from _helpers import find_qualifying_pair, make_2pl_matrix
 from calibration import (
     MIN_SAME_SIGN,
     contest_record,
@@ -47,7 +46,7 @@ from calibration import (
 
 def test_contest_record_returns_full_vectors_and_mask():
     R, _ = make_2pl_matrix(150, [(1.0, b) for b in np.linspace(-1.5, 1.5, 24)], seed=7)
-    c = top_two(R, [str(i) for i in range(R.shape[0])])
+    c = find_qualifying_pair(R)
     rec = contest_record(R, c["m1_idx"], c["m2_idx"], sign=1)
     assert rec is not None
     n_items = R.shape[1]

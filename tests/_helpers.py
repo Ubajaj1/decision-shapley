@@ -21,6 +21,31 @@ def make_2pl_matrix(n_models, item_specs, seed=0):
     return R, theta
 
 
+def find_qualifying_pair(R, sign=1, min_same_sign=4):
+    """Return a deterministic strict-score model pair with enough active items.
+
+    Calibration unit tests exercise same-sign filtering rather than leaderboard
+    tie-breaking. Selecting the top adjacent pair made those tests depend on the
+    sort order of equal-scoring synthetic models, which varies across NumPy
+    versions. This helper chooses the first qualifying pair by model index.
+    """
+    R = np.asarray(R)
+    scores = R.mean(axis=1)
+    for m1_idx in range(R.shape[0]):
+        for m2_idx in range(R.shape[0]):
+            if scores[m1_idx] <= scores[m2_idx]:
+                continue
+            d = R[m1_idx] - R[m2_idx]
+            if int((d == sign).sum()) >= min_same_sign:
+                return {
+                    "m1_idx": m1_idx,
+                    "m2_idx": m2_idx,
+                    "n_plus": int((d == 1).sum()),
+                    "n_minus": int((d == -1).sum()),
+                }
+    raise AssertionError("Synthetic matrix contains no qualifying model pair.")
+
+
 def exact_shapley(n, value_fn):
     """Exhaustive-permutation exact Shapley for an arbitrary value function.
 

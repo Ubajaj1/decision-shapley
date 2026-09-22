@@ -19,7 +19,7 @@ The pooled_spearman descriptive is retained only to document the confound.
 import numpy as np
 import pytest
 
-from _helpers import make_2pl_matrix
+from _helpers import find_qualifying_pair, make_2pl_matrix
 from decision import top_two
 from calibration import (
     MIN_SAME_SIGN,
@@ -55,7 +55,7 @@ def test_pooled_spearman_degenerate_is_nan():
 
 def test_contest_sample_returns_same_sign_only():
     R, _ = make_2pl_matrix(150, [(1.0, b) for b in np.linspace(-1.5, 1.5, 24)], seed=7)
-    c = top_two(R, [str(i) for i in range(R.shape[0])])
+    c = find_qualifying_pair(R)
     sample = contest_sample(R, c["m1_idx"], c["m2_idx"], sign=1)
     assert sample is not None
     J, piv = sample
@@ -75,7 +75,7 @@ def test_contest_sample_disqualifies_too_few_same_sign():
 def test_contest_sample_info_phi_weight():
     # secondary target: weight by info-VF Shapley phi instead of raw Fisher J
     R, _ = make_2pl_matrix(150, [(1.0, b) for b in np.linspace(-1.5, 1.5, 24)], seed=7)
-    c = top_two(R, [str(i) for i in range(R.shape[0])])
+    c = find_qualifying_pair(R)
     fisher = contest_sample(R, c["m1_idx"], c["m2_idx"], weight="fisher")
     phi = contest_sample(R, c["m1_idx"], c["m2_idx"], weight="info_phi", T=2000)
     assert phi is not None
