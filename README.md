@@ -103,5 +103,6 @@ publication.
 
 ## License
 
-No software license has been selected yet. The repository should remain private
-until a license is chosen and the upstream data-source terms have been checked.
+The software in this repository is released under the MIT License. The license
+applies to this repository's code, not to third-party benchmark datasets; users
+must follow the terms of the original data providers.
